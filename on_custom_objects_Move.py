@@ -14,8 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-'''This Program creates a two custom wall objects and cozmo will bump on those custom objects
-and move left or right accordingly
+'''This Program creates two custom wall objects and cozmo will  on recognizing those custom objects
+will move as programmed"
 .
 
 You can adjust the markers, marker sizes, and object sizes to fit whatever
@@ -29,7 +29,7 @@ from cozmo.util import degrees, distance_mm, speed_mmps
 isLeft = [ False ]# these variables are set unset when the objects appear /dissapear
 isRight = [ False ]
 
-#will include the default position cozmo's head is initialised
+#will set the default position cozmo's head upon start
 def default_position_upon_start(robot: cozmo.robot.Robot):
     robot.set_head_angle(degrees(0)).wait_for_completed()
 
