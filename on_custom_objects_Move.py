@@ -14,11 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-'''This example demonstrates how you can define custom objects.
-
-The example defines several custom objects (2 cubes, a wall and a box). When
-Cozmo sees the markers for those objects he will report that he observed an
-object of that size and shape there.
+'''This Program creates a two custom wall objects and cozmo will bump on those custom objects
+and move left or right accordingly
+.
 
 You can adjust the markers, marker sizes, and object sizes to fit whatever
 object you have and the exact size of the markers that you print out.
@@ -28,9 +26,12 @@ import time
 import cozmo
 from cozmo.objects import CustomObject, CustomObjectMarkers, CustomObjectTypes
 from cozmo.util import degrees, distance_mm, speed_mmps
-isLeft = [ False ]
+isLeft = [ False ]# these variables are set unset when the objects appear /dissapear
 isRight = [ False ]
 
+#will include the default position cozmo's head is initialised
+def default_position_upon_start(robot: cozmo.robot.Robot):
+    robot.set_head_angle(degrees(0)).wait_for_completed()
 
 def handle_object_appeared(evt, **kw):
     # This will be called whenever an EvtObjectAppeared is dispatched -
@@ -39,14 +40,10 @@ def handle_object_appeared(evt, **kw):
         #if the object is a diamond 2
         if(evt.obj.object_type == CustomObjectTypes.CustomType00):
             isLeft[0] = True
-            print(isLeft)
-
-
         #if the object is hexagon 5
         elif(evt.obj.object_type == CustomObjectTypes.CustomType01):
             isRight[0] = True
 
-            #print("Cozmo started seeing a %s" % str(evt.obj.object_type))
 
 
 def handle_object_disappeared(evt, **kw):
@@ -55,27 +52,34 @@ def handle_object_disappeared(evt, **kw):
     #if the object is a diamond 2
     if(evt.obj.object_type == CustomObjectTypes.CustomType00):
         isLeft[0] = False
-
-
-
     #if the object is hexagon 5
     elif(evt.obj.object_type == CustomObjectTypes.CustomType01):
         isRight[0] = False
 
 
-def go_to_object_test(robot: cozmo.robot.Robot):
-    robot.go_to_object(CustomObjectTypes.CustomType00, distance_mm(70.0))
+def action_on_seeing_object(robot: cozmo.robot.Robot):
+    if(isLeft[0] == True):
+        robot.drive_straight(distance_mm(100), speed_mmps(70)).wait_for_completed()
+        robot.turn_in_place(degrees(90)).wait_for_completed()
+
+    if(isRight[0] == True):
+        robot.drive_straight(distance_mm(100), speed_mmps(70)).wait_for_completed()
+        robot.turn_in_place(degrees(-90)).wait_for_completed()
+
+
 
 def custom_objects(robot: cozmo.robot.Robot):
     # Add event handlers for whenever Cozmo sees a new object
     robot.add_event_handler(cozmo.objects.EvtObjectAppeared, handle_object_appeared)
-    #robot.add_event_handler(cozmo.objects.EvtObjectDisappeared, handle_object_disappeared)
+    robot.add_event_handler(cozmo.objects.EvtObjectDisappeared, handle_object_disappeared)
+
+    default_position_upon_start(robot)
 
 
 
     # define a unique wall (150mm x 120mm (x10mm thick for all walls)
     # with a 50mm x 30mm Circles2 image on front and back
-    wall_obj = robot.world.define_custom_wall(CustomObjectTypes.CustomType01,
+    wall_obj1 = robot.world.define_custom_wall(CustomObjectTypes.CustomType01,
                                               CustomObjectMarkers.Hexagons5,
                                               150, 120,
                                               50, 30, True)
@@ -84,28 +88,15 @@ def custom_objects(robot: cozmo.robot.Robot):
                                                 150, 120,
                                                 50, 30, True)
 
-
-
-    if ((wall_obj is not None) and (wall_obj2 is not None)):
+    if ((wall_obj1 is not None) and (wall_obj2 is not None)):
         print("All objects defined successfully!")
     else:
         print("One or more object definitions failed!")
 
-
-
     print("Press CTRL-C to quit")
     while True:
         #time.sleep(0.1)
-
-        if(isLeft[0] == True):
-            robot.turn_in_place(degrees(90)).wait_for_completed()
-            robot.drive_straight(distance_mm(100), speed_mmps(70)).wait_for_completed()
-        if(isRight[0] == True):
-            robot.turn_in_place(degrees(-90)).wait_for_completed()
-            robot.drive_straight(distance_mm(100), speed_mmps(70)).wait_for_completed()
+        action_on_seeing_object(robot)
 
 
-
-
-
-cozmo.run_program(custom_objects, use_3d_viewer=True, use_viewer=True)
+cozmo.run_program(custom_objects, use_3d_viewer=False, use_viewer=True)
