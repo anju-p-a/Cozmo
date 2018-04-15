@@ -148,37 +148,4 @@ def action_on_seeing_object(robot: cozmo.robot.Robot):
 
 
 
-
-def go_to_object_test(robot: cozmo.robot.Robot):
-    '''The core of the go to object test program'''
-
-    # Move lift down and tilt the head up
-    robot.move_lift(-3)
-    robot.set_head_angle(degrees(0)).wait_for_completed()
-
-    # look around and try to find a cube
-    look_around = robot.start_behavior(cozmo.behavior.BehaviorTypes.LookAroundInPlace)
-
-    cube = None
-
-
-    try:
-        cube = robot.world.wait_for_observed_light_cube(timeout=30)
-        print("Found cube: %s" % cube)
-    except asyncio.TimeoutError:
-        print("Didn't find a cube")
-    finally:
-        # whether we find it or not, we want to stop the behavior
-        look_around.stop()
-
-    if cube:
-        # Drive to 70mm away from the cube (much closer and Cozmo
-        # will likely hit the cube) and then stop.
-        robot.go_to_pose(pose, relative_to_robot=False, in_parallel=False, num_retries=0)
-        action = robot.go_to_object(cube, distance_mm(70.0))
-        action.wait_for_completed()
-        print("Completed action: result = %s" % action)
-        print("Done.")
-
-
 cozmo.run_program(custom_objects, use_3d_viewer=True, use_viewer=True)
