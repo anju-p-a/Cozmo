@@ -22,6 +22,7 @@ object (e.g. a LightCube).
 '''
 
 import asyncio
+import random
 
 import cozmo
 from cozmo.util import degrees, distance_mm,time,distance_inches,speed_mmps
@@ -106,7 +107,10 @@ def custom_objects(robot: cozmo.robot.Robot):
 
 def action_on_seeing_object(robot: cozmo.robot.Robot):
 
-        if isHex5[0]:
+        if isHex4[0]:
+                rand = random.randint(0,2)
+                print("This is the random value")
+                print(rand)
                 wall = robot.world.wait_until_observe_num_objects(num=1,
                                                               object_type=cozmo.objects.CustomObject,
                                                               timeout=1)
@@ -114,11 +118,19 @@ def action_on_seeing_object(robot: cozmo.robot.Robot):
                     robot.go_to_pose(wall[0].pose, relative_to_robot=False, in_parallel=False, num_retries=0).wait_for_completed()
                     robot.drive_straight(distance_inches(2.5), speed_mmps(30)).wait_for_completed()
                     robot.say_text("What the????").wait_for_completed()
+                    robot.drive_straight(distance_inches(-3.5), speed_mmps(30)).wait_for_completed()
+                    if(rand == 0):
+                        robot.turn_in_place(degrees(90)).wait_for_completed()
+                    else:
+                        robot.turn_in_place(degrees(-90)).wait_for_completed()
+
+
                     #robot.drive_straight(distance_inches(-3), speed_mmps(70)).wait_for_completed()
                     #robot.drive_straight(distance_inches(3), speed_mmps(35)).wait_for_completed()
                     #robot.drive_straight(distance_inches(1), speed_mmps(85)).wait_for_completed()
                     #robot.say_text("You gotta be kidding me!").wait_for_completed()
-                    robot.turn_in_place(degrees(90)).wait_for_completed()
+                    #robot.turn_in_place(degrees(90)).wait_for_completed()
+                    default_position_upon_start(robot);
         if isDiamond2[0]:
             wall = robot.world.wait_until_observe_num_objects(num=1,
                                                           object_type=cozmo.objects.CustomObject,
@@ -130,8 +142,9 @@ def action_on_seeing_object(robot: cozmo.robot.Robot):
                 #robot.say_text("Ugh.").wait_for_completed()
                 #robot.say_text("Careful Cozmo....").wait_for_completed()
                 #robot.turn_in_place(degrees(180)).wait_for_completed()
+                default_position_upon_start(robot);
 
-        if isHex4[0]:
+        if isHex5[0]:
             wall = robot.world.wait_until_observe_num_objects(num=1,
                                                           object_type=cozmo.objects.CustomObject,
                                                           timeout=1)
@@ -145,7 +158,7 @@ def action_on_seeing_object(robot: cozmo.robot.Robot):
                 #robot.say_text("It's gotta be around here somewhere").wait_for_completed()
                 #robot.drive_straight(distance_inches(8), speed_mmps(35)).wait_for_completed()
                 #robot.play_anim_trigger(cozmo.anim.Triggers.CubePounceWinSession, ignore_body_track=True).wait_for_completed()
-
+                default_position_upon_start(robot);
 
 
 cozmo.run_program(custom_objects, use_3d_viewer=True, use_viewer=True)
